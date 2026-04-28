@@ -3,105 +3,138 @@ import requests
 
 URL = 'https://www.newegg.com/p/pl?d=laptop'
 
-def parseSoup(url: str):
+def parseSoup(url: str) -> BinarySearchTree:
     page = requests.get(url)
-
+    print(page)
     soup = BeautifulSoup(page.text, "html.parser")
-
     products = soup.find_all("div", class_ = "item-container position-relative")
 
+    bst = BinarySearchTree()
 
     for item in products:
         name = item.find("a", class_ = "item-title")
         name_s = name.text.strip()
         
         price = item.find("li", class_ = "price-current")
+        price_s = price.text.strip("\u2013").strip()
+        price_f = float(("".join(price_s.split(","))).strip("$"))
 
         rating = item.find("a", class_ = "item-rating")
         if rating != None:
             rating = rating.find("i")
             rating_s = rating["aria-label"].strip("rated").strip()
-        
+        else:
+            rating_s = None
 
         print(f"Laptop: {name_s}") 
-        print(f"Price: {price.text.strip("\u2013").strip()}")
+        print(f"Price: {price_s}")
         print(f"Ratings: {rating_s}")
         print("\n")
 
+        laptopInfo = LaptopInfo(name_s, price_f, rating_s)
+        bst.insert(laptopInfo)
+
+    return bst
+
 class LaptopInfo:
     def __init__(self, name: str, price: float, rating: str):
-        self.__name = name
-        self.__price = price
-        self.__rating = rating
+        self._name = name
+        self._price = price
+        self._rating = rating
 
     def __str__(self):
-        return (f"Laptop: {self.__name}\nPrice: {self.__price}\nRatings: {self.__rating}")
+        return (f"Laptop: {self._name}\nPrice: {self._price}\nRatings: {self._rating}")
     
     __rep__ = __str__
 
 class Node:
     def __init__(self, laptop: LaptopInfo):
-        self.__value = laptop.__price
-        self.__lst = [laptop]
-        self.__left = None
-        self.__right = None
+        self._value = laptop._price
+        self._lst = [laptop]
+        self._left = None
+        self._right = None
 
 
 class BinarySearchTree:
     def __init__(self):
-        self.__root = None
+        self._root = None
 
     def isEmpty(self):
-        return self.__root == None
+        return self._root == None
 
     def insert(self, laptop: LaptopInfo):
-        if self.__root == None:
-            self.__root = Node(laptop)
+        if self._root == None:
+            self._root = Node(laptop)
         else:
-            self.insertHelper(self.__root, laptop)
+            self.insertHelper(self._root, laptop)
 
     def insertHelper(self, node: Node, laptop: LaptopInfo):
-        if laptop.__price < node.__value:
-            if node.__left == None:
-                node.__left = Node(laptop)
+        if laptop._price < node._value:
+            if node._left == None:
+                node._left = Node(laptop)
             else:
-                self._insertHelper(node.__left, laptop)
-        elif laptop.__price == node.__value:
-            node.__lst += [laptop]
+                self.insertHelper(node._left, laptop)
+        elif laptop._price == node._value:
+            node._lst += [laptop]
         else:
-            if node.__right == None:
-                node.__right = Node(laptop)
+            if node._right == None:
+                node._right = Node(laptop)
             else:
-                self._insertHelper(node.__right, laptop)
+                self.insertHelper(node._right, laptop)
 
     def searchByPrice(self, price: float):
         if not self.isEmpty():
             smallestDif = float('inf')
             closestNode = None
-            current = self.__root
+            current = self._root
 
             while current:
-                if price == current.__value:
-                    for element in current.__lst:
+                if price == current._value:
+                    for element in current._lst:
                         print(element)
                         return
                 else:
-                    dif = abs(price - current.__value)
+                    dif = abs(price - current._value)
                     if dif < smallestDif:
                         smallestDif = dif
                         closestNode = current
-                    if price < current.__value:
-                        current = current.__left
+                    if price < current._value:
+                        current = current._left
                     else:
-                        current = current.__right
+                        current = current._right
             
-            for element in closestNode.__lst:
+            for element in closestNode._lst:
                 print(element)
             
             return
 
         else:
             return None
+        
+def main():
+    print("Type 'exit' to terminate program\nType 'run' to run webscraper/fetch laptop data\nType 'search' to search by price")
+    running = True
+    bst = None
+
+    while running:
+        print("\n")
+        i = input("")
+        if i == "exit":
+            running = False
+        elif i == "run":
+            bst = parseSoup(URL)
+        elif i == "search":
+            if bst == None:
+                print("Type 'run' first before searching")
+            else:
+                pr = float(input("Type price: "))
+                "Laptop(s) with closest price:"
+                bst.searchByPrice(pr)
+        else:
+            print("Input invalid")
+
+    print("Session ended")
 
 
+main()
     
