@@ -3,7 +3,7 @@
 Description:
 
 This project provides a basic, interactive webscraping implementation 
-that takes laptop information (name, price, rating) from a website and stores it in a Binary Search Tree. It uses Python requests to retrieve HTML data from a selected url
+that takes laptop information (name, price, rating) from a website and stores it in a Binary Search Tree. It uses Python requests to retrieve HTML data from a selected url (https://www.newegg.com/p/pl?d=laptop)
 and uses the Beautiful Soup library for parsing the HTML and
 extracting the laptop data. The BST provides a search functionality
 that allowa the user to input a desired price; it returns the laptop(s) with the closest price.

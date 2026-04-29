@@ -11,28 +11,32 @@ def parseSoup(url: str) -> BinarySearchTree:
 
     bst = BinarySearchTree()
 
-    for item in products:
-        name = item.find("a", class_ = "item-title")
-        name_s = name.text.strip()
-        
-        price = item.find("li", class_ = "price-current")
-        price_s = price.text.strip("\u2013").strip()
-        price_f = float(("".join(price_s.split(","))).strip("$"))
+    if products == None:
+        print(page)
+        return "Request failed"
+    else:
+        for item in products:
+            name = item.find("a", class_ = "item-title")
+            name_s = name.text.strip()
+            
+            price = item.find("li", class_ = "price-current")
+            price_s = price.text.strip("\u2013").strip()
+            price_f = float(("".join(price_s.split(","))).strip("$"))
 
-        rating = item.find("a", class_ = "item-rating")
-        if rating != None:
-            rating = rating.find("i")
-            rating_s = rating["aria-label"].strip("rated").strip()
-        else:
-            rating_s = None
+            rating = item.find("a", class_ = "item-rating")
+            if rating != None:
+                rating = rating.find("i")
+                rating_s = rating["aria-label"].strip("rated").strip()
+            else:
+                rating_s = None
 
-        print(f"Laptop: {name_s}") 
-        print(f"Price: {price_s}")
-        print(f"Ratings: {rating_s}")
-        print("\n")
+            print(f"Laptop: {name_s}") 
+            print(f"Price: {price_s}")
+            print(f"Ratings: {rating_s}")
+            print("\n")
 
-        laptopInfo = LaptopInfo(name_s, price_f, rating_s)
-        bst.insert(laptopInfo)
+            laptopInfo = LaptopInfo(name_s, price_f, rating_s)
+            bst.insert(laptopInfo)
 
     return bst
 
@@ -127,9 +131,15 @@ def main():
             if bst == None:
                 print("Type 'run' first before searching")
             else:
-                pr = float(input("Type price: "))
-                "Laptop(s) with closest price:"
-                bst.searchByPrice(pr)
+                try:
+                    pr = float(input("Type price: $"))
+                    if pr > 0:
+                        "Laptop(s) with closest price:"
+                        bst.searchByPrice(pr)
+                    else:
+                        print("Input invalid")
+                except ValueError:
+                    print("Input invalid")
         else:
             print("Input invalid")
 
