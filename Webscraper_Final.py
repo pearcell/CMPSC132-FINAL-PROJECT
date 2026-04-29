@@ -118,6 +118,7 @@ class BinarySearchTree:
                     # If a node price matches the desired price all laptops associated with the _lst attribute of that node are printed
                     for element in current._lst:
                         print(element)
+                        print("\n")
                         return
                 else:
                     # dif is absolute value of difference between desired price and current node's price
@@ -133,6 +134,7 @@ class BinarySearchTree:
             
             # In the case that no price matches the desired price all laptops associated with the _lst attribute with the closest price to the desired price are printed
             for element in closestNode._lst:
+                print("\n")
                 print(element)
             
             return
